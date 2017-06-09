@@ -1,0 +1,112 @@
+<html>
+<head>
+<script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+<script>
+  AFRAME.registerComponent('change-color-on-hover', {
+    schema: {
+      color: {default: 'red'}
+    },
+    init: function () {
+      var data = this.data;
+      var el = this.el;  // <a-box>
+      var defaultColor = el.getAttribute('material').color;
+      el.addEventListener('mouseenter', function () {
+        el.setAttribute('color', data.color);
+      });
+      el.addEventListener('mouseleave', function () {
+        el.setAttribute('color', defaultColor);
+      });
+    }
+  });
+
+  AFRAME.registerComponent('collison-check', {
+    schema: {
+      el: {
+        type: 'selector'
+      },
+      radius: {
+        default: 0
+      },
+      otherRadius: {
+        default: 0
+      }
+    },
+    tick: function () {
+      var el1 = this.el;
+      var el2 = this.data.el;
+      var dist = el1.object3D.getWorldPosition().distanceTo(el2.object3D.getWorldPosition());
+      if (dist < this.data.radius + this.data.otherRadius) {
+        //this.el.emit('collide');
+        document.querySelector('#win-screen').emit('fade');
+        document.querySelector('#win-text').emit('fade');
+        console.log("touch");
+      }
+    }
+  });
+
+/*
+AFRAME.registerComponent('collison', {
+scheme:{
+  win:{
+    default: false
+  }
+},
+  init :function (){
+    var sceneEl = document.querySelector('a-scene');
+    var el = this.el;
+
+      el.addEventListener('collide', function(){
+      var boxEl = document.createElement('a-box');
+      boxEl.setAttribute('material', {color: '#e1c7fc'});
+      boxEl.setAttribute('position', {x:0, y:0, z:-3});
+      boxEl.setAttribute('scale', {x:10, y:10, z:1});
+        //attach fade animation?
+      boxEl.setAttribute()
+
+      sceneEl.appendChild(boxEl);
+
+      var textEl = document.createElement('text');
+      textEl.setAttribute('value', {value: "you did it"});
+      sceneEl.appendChild(textEl);
+
+    });
+  }
+});
+*/
+</script>
+</head>
+
+<body>
+  <a-scene collison>
+
+    <a-entity position= "0 1 1">
+      <a-animation attribute="rotation" to="0 0 360" repeat="1" easing="linear" dur="2500" begin="mouseenter" ></a-animation>
+      <a-ring color="#EF2D5E" position="0 1 -4.5" change-color-on-hover="color: white" scale = "0.3 0.3 .2" collison-check="el: #ring; radius: 0.3; other-radius: 0.3;"> </a-ring>
+    </a-entity>
+
+    <a-entity position= "0 2 1">
+      <a-animation attribute="rotation" to="0 0 360" repeat="1" easing="linear" dur="4000" begin="mouseenter" ></a-animation>
+      <a-ring id="ring" color="#EF2D5E" position="0 2 -4.5" change-color-on-hover="color: white" scale = "0.3 0.3 .2"></a-ring>
+    </a-entity>
+
+    <a-entity id="text" position="0 1.2 -3" text="width: 4; align: center; color: black; value: Make the rings meet"></a-entity>
+
+    <a-entity id="win-screen" visible="false" material="opacity: .2" geometry="primitive: box" color="#e1c7fc" position="0 0 -3" scale="10 10 1" >
+        <a-animation attribute="visible" begin="fade" to="true"></a-animation>
+        <a-animation attribute="material.opacity" dur="4000" begin="fade" from ="0" to="1"></a-animation>
+    </a-entity>
+
+    <a-entity id="win-text" position="0 1.2 -2" text="width: 4; align: center; color: black; value: You did it" visible="false" material="opacity: .2">
+      <a-animation attribute="visible" begin="fade" to="true"></a-animation>
+      <a-animation attribute="material.opacity" dur="4000"  begin="fade" from ="0" to="1"></a-animation>
+    </a-entity>
+
+    <a-plane position="0 2 -5" rotation="0 0 0" width="12" height="10" color="#7BC8A4"></a-plane>
+
+    <a-camera><a-cursor></a-cursor></a-camera>
+
+    <a-sky color="#9acfe3"></a-sky>
+
+  </a-scene>
+</body>
+</html>
